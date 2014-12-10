@@ -1,7 +1,5 @@
 machine:
   pre:
-    - pwd
-    - ls
     - sh compilation-ass-3/install-petite.sh
 
 test:
