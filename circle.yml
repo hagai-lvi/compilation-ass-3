@@ -1,4 +1,4 @@
-ine:
+machine:
   pre:
     - ./compilation-ass-3/install-petite.sh
 
