@@ -1,0 +1,7 @@
+ine:
+  pre:
+    - ./compilation-ass-3/install-petite.sh
+
+test:
+  override:
+    - ./run-test.sh
