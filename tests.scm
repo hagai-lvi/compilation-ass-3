@@ -1,8 +1,6 @@
 ;;; Copyright (c) 2012 Andrew W. Keep
 ;;; See the accompanying file Copyright for detatils
 ;(load "formatter.scm")
-(display 'abc)
-(newline)
 (import
 	(rnrs)
 	(rough-draft unit-test)
