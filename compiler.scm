@@ -216,6 +216,17 @@
 			`(and ,(? 'first) . ,(? 'rest))
 			(lambda (first rest)
 				(parse `(if ,first (and ,@rest) #f))))
+		(pattern-rule 
+			`(or)
+			(lambda () (parse #f)))
+		(pattern-rule 
+			`(or ,(? 'e1))
+			(lambda (e1) (parse e1) ))
+		(pattern-rule 
+			`(or . ,(? 'exps))
+			(lambda (exps)
+				(let ((parsed-exps (map parse exps)))
+					`(or ,parsed-exps))))
 		(pattern-rule
 			`(,(? 'va  ^var?) . ,(? 'varb list?))
 			(lambda (vari variables)
