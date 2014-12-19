@@ -9,7 +9,7 @@
 	(lambda (var-name envs)
 		(let ((minor (find-minor var-name (car envs))))
 			(if	minor
-				`(pvar ,minor)
+				`(pvar ,var-name ,minor)
 				(let ((major-minor (find-major-minor var-name (cdr envs))))
 					(if	major-minor
 						major-minor
@@ -23,7 +23,7 @@
 							#f
 							(let ((minor (find-minor var-name (car envs))))
 								(if	minor
-									`(bvar ,counter ,minor)
+									`(bvar ,var-name ,counter ,minor)
 									(f var-name (cdr envs) (+ 1 counter) )))))))
 		(f var-name envs 0))))
 
