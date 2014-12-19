@@ -16,6 +16,8 @@
 					(lambda (pe is-tp)
 						(cond	((tagged-with `const pe) pe)
 								((tagged-with `var pe) pe)
+								((tagged-with `define pe)
+									`(define ,(cadr pe) ,(atp (caddr pe) #f) ))
 								((tagged-with `or pe)
 									(let* (	(reversed-pe (reverse (cadr pe)))
 											(last (car reversed-pe))
