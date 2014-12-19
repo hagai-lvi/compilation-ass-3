@@ -16,6 +16,7 @@
 		(assert-equal? (find-minor 'a '(a b c)) 0 )
 		(assert-equal? (find-minor 'c '(a b c)) 2 )
 		(assert-equal? (find-minor 'x '(a b c)) #f )
+		
 	)
 
 )
