@@ -1,6 +1,6 @@
 ;;; Copyright (c) 2012 Andrew W. Keep
 ;;; See the accompanying file Copyright for detatils
-;(load "formatter.scm")
+(load "compiler.scm")
 (import
 	(rnrs)
 	(rough-draft unit-test)
@@ -12,6 +12,30 @@
 		(assert-equal? 1 1)
 	)
 
+	(define-test test-find-minor
+		(assert-equal? (find-minor 'a '(a b c)) 0 )
+		(assert-equal? (find-minor 'c '(a b c)) 2 )
+		(assert-equal? (find-minor 'x '(a b c)) #f )
+	)
+
+	(define-test test-find-major-minor
+		(assert-equal? (find-major-minor `a `((a) (x)) ) `(bvar 0 0) )
+		(assert-equal? (find-major-minor `x `((a x) (x) (x)) ) `(bvar 0 1) )
+		(assert-equal? (find-major-minor `not `((a b) (c) (d)) ) #f )
+	)
+
+	(define-test test-get-var-annotation
+		(assert-equal? (get-var-annotation 'x '((x) (a) (b))) `(pvar 0) )
+		(assert-equal? (get-var-annotation 'x '((x y z) (x) (x))) `(pvar 0) )
+		(assert-equal? (get-var-annotation 'y '((x y z) (x) (x))) `(pvar 1) )
+
+		(assert-equal? (get-var-annotation 'a '((x) (a) (b))) `(bvar 0 0) )
+		(assert-equal? (get-var-annotation 'b '((x y z) (a b c) (a b c) (b))) `(bvar 0 1) )
+
+		(assert-equal? (get-var-annotation 'not '((a) (b) (c))) `(fvar not) )
+
+	)
+
 )
 
 ;(run-test-suites foo)
@@ -20,25 +44,3 @@
 
 
 (exit (run-test-suites foo))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<string>
