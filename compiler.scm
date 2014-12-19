@@ -334,6 +334,6 @@
 		(cond 
 			((null? pe) pe)
 			((symbol? pe)pe)
-			((and (pair? pe)(eq? (car pe) 'lambda-simple))(set! bound-list (add-list (cadr pe) bound-list)))
-			((and (pair? pe)(eq? (car pe) 'var)) `(bvar))
+			((and (pair? pe)(eq? (car pe) 'lambda-simple))(begin (set! bound-list (add-list (cadr pe) bound-list))(cons (treverse (car pe) bound-list)(treverse (cdr pe) bound-list))))
+			((and (pair? pe)(eq? (car pe) 'var)) (get-var-annotation (cadr pe) bound-list))
 			(else (cons (treverse (car pe) bound-list)(treverse (cdr pe) bound-list)))))
