@@ -5,9 +5,27 @@
 ;; const ;;
 ;;;;;;;;;;;
 
-;(define annotate-var
-;	(lambda (var-name envs)
-;		))
+(define get-var-annotation
+	(lambda (var-name envs)
+		(let ((minor (find-minor var-name (car envs))))
+			(if	minor
+				`(pvar ,minor)
+				(let ((major-minor (find-major-minor var-name (cdr envs))))
+					(if	major-minor
+						major-minor
+						`(fvar ,var-name)))))))
+
+
+(define find-major-minor
+	(lambda (var-name envs)
+		(letrec ((f (lambda (var-name envs counter)
+						(if (null? envs)
+							#f
+							(let ((minor (find-minor var-name (car envs))))
+								(if	minor
+									`(bvar ,counter ,minor)
+									(f var-name (cdr envs) (+ 1 counter) )))))))
+		(f var-name envs 0))))
 
 (define find-minor
 	(lambda (var-name env)
