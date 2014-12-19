@@ -5,7 +5,17 @@
 ;; const ;;
 ;;;;;;;;;;;
 
-; TODO: add 'begin' to the parsing of lambdas bodies
+;(define annotate-var
+;	(lambda (var-name envs)
+;		))
+
+(define find-minor
+	(lambda (var-name env)
+		(letrec ((f (lambda (var-name env counter)
+					(cond	((null? env) #f)
+							((eq? var-name (car env)) counter)
+							(else (f var-name (cdr env) (+ 1 counter)))))))
+		(f var-name env 0))))
 
 (define (^const? x)
 	(or 	(boolean? x)
