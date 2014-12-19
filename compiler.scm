@@ -52,7 +52,7 @@
 
 
 (define (let-vars-expressions-list? list) 	;TODO think what are the criterions for a let-vars-expressions-list
-	(andmap (lambda (x)
+	(andmap (lambda (x)vector for each sheme
 				(and (list? x) (^var? (car x))))
 			list))
 
@@ -219,6 +219,10 @@
 		(expand-letstar rest `((lambda (,(car last)) ,(apply beginify `(,body1 ,@body-rest)) ) ,(cadr last)) `())
 	))))
 
+
+
+
+
 (define (expand-cond cond-list)
 	(letrec ((f (lambda (cond-list succ)
 					(cond 	((null? cond-list) (succ cond-list))
@@ -278,3 +282,30 @@
 	(if (and (list? lst) (> (length lst) 0))
 	    `(begin ,exp1 ,@lst)
 	    exp1))
+
+
+(define (add-list new-list bound-list)
+
+	(cons new-list bound-list)
+	)
+
+
+; (define (treverse-pe-a pe bound-list)
+; 	(letrec ((treverse-pe (trace-lambda what(pe bound-list)
+; 	(cond 	((null? pe) pe) 
+; 			((and (pair? pe)(eq? (car pe) 'lambda-simple))(treverse-pe (cdr pe)(add-list (cadr pe) bound-list)))
+; 			((and (pair? pe)(eq? (car pe) 'var))((set-car! pe 'haha)pe))
+
+; 		(else (cons (treverse-pe (car pe) bound-list) (treverse-pe (cdr pe) bound-list))))))
+	
+; 	(begin (treverse-pe pe bound-list)
+; 		pe)))
+
+	(define (treverse pe bound-list)
+
+		(cond 
+			((null? pe) pe)
+			((symbol? pe)pe)
+			((and (pair? pe)(eq? (car pe) 'lambda-simple))(set! bound-list (add-list (cadr pe) bound-list)))
+			((and (pair? pe)(eq? (car pe) 'var)) `(bvar))
+			(else (cons (treverse (car pe) bound-list)(treverse (cdr pe) bound-list)))))
