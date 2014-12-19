@@ -25,6 +25,10 @@
 													(list (atp last is-tp))))))
 								((tagged-with `lambda-simple pe)
 									(with pe (lambda (name param body) `(,name ,param ,(atp body #t)))))
+								((tagged-with `lambda-opt pe)
+									(with pe (lambda (name param rest body) `(,name ,param ,rest ,(atp body #t)))))
+								((tagged-with `lambda-variadic pe)
+									(with pe (lambda (name param body) `(,name ,param ,(atp body #t)))))
 								((tagged-with `applic pe)
 									(if	is-tp
 										(with pe (lambda (name operator params)
