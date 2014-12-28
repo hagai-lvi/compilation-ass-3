@@ -328,12 +328,26 @@
 	
 ; 	(begin (treverse-pe pe bound-list)
 ; 		pe)))
+	(define (pe->lex-pe pe)
+		(treverse pe '(())))
 
 	(define (treverse pe bound-list)
-
 		(cond 
 			((null? pe) pe)
-			((symbol? pe)pe)
-			((and (pair? pe)(eq? (car pe) 'lambda-simple))(begin (set! bound-list (add-list (cadr pe) bound-list))(cons (treverse (car pe) bound-list)(treverse (cdr pe) bound-list))))
+			((or (^const? pe)(symbol? pe))pe)
+			((and (pair? pe)(eq? (car pe) 'lambda-simple))
+				(cons 
+					(treverse (car pe) (add-list (cadr pe) bound-list))
+					(treverse (cdr pe) (add-list (cadr pe) bound-list))
+					))
+			((and (pair? pe)(eq? (car pe) 'lambda-opt))(cons 
+				(treverse (car pe) (add-list (append (cadr pe) (cddr pe)) bound-list))
+				(treverse (cdr pe) (add-list (append (cadr pe) (cddr pe)) bound-list))
+				))
+			((and (pair? pe)(eq? (car pe) 'lambda-variadic))(cons 
+				(treverse (car pe) (add-list (cdr pe) bound-list))
+				(treverse (cdr pe) (add-list (cdr pe) bound-list))
+				))
+			
 			((and (pair? pe)(eq? (car pe) 'var)) (get-var-annotation (cadr pe) bound-list))
 			(else (cons (treverse (car pe) bound-list)(treverse (cdr pe) bound-list)))))
