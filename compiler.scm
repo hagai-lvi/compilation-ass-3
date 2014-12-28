@@ -5,6 +5,57 @@
 ;; const ;;
 ;;;;;;;;;;;
 
+
+(define tagged-with
+	(lambda (tag exp)
+		(eq? tag (car exp))))
+
+(define annotate-tc
+	(lambda (pe)
+		(letrec ((atp
+					(lambda (pe is-tp)
+						(cond	((tagged-with `const pe) pe)
+								((tagged-with `var pe) pe)
+								((tagged-with `define pe)
+									`(define ,(cadr pe) ,(atp (caddr pe) #f) ))
+								((tagged-with `or pe)
+									(let* (	(reversed-pe (reverse (cadr pe)))
+											(last (car reversed-pe))
+											(rest (reverse (cdr reversed-pe))))
+										`(or 
+										,(append	(map (lambda (exp) (atp exp #f) ) rest )
+													(list (atp last is-tp))))))
+								((tagged-with `lambda-simple pe)
+									(with pe (lambda (name param body) `(,name ,param ,(atp body #t)))))
+								((tagged-with `lambda-opt pe)
+									(with pe (lambda (name param rest body) `(,name ,param ,rest ,(atp body #t)))))
+								((tagged-with `lambda-variadic pe)
+									(with pe (lambda (name param body) `(,name ,param ,(atp body #t)))))
+								((tagged-with `applic pe)
+									(if	is-tp
+										(with pe (lambda (name operator params)
+												`(applic-tp ,(atp operator #f) ,(map (lambda (exp)
+																					(atp exp #f)) params))))
+										(with pe (lambda (name operator params)
+												`(applic ,(atp operator #f) ,(map (lambda (exp)
+																					(atp exp #f)) params))))))
+								((tagged-with `seq pe)
+									(let* (	(reversed-pe (reverse (cadr pe)))
+											(last (car reversed-pe))
+											(rest (reverse (cdr reversed-pe))))
+										`(seq 
+										,(append	(map (lambda (exp) (atp exp #f) ) rest )
+													(list (atp last is-tp))))))
+								((tagged-with `if3 pe)
+									(let* (	(first (cadr pe))
+											(rest (cddr pe)))
+										`(if3 
+										,@(append	(list (atp first #f))
+													(map (lambda (exp) (atp exp is-tp) ) rest )))))
+								(else pe)))))
+		(atp pe #f))))
+
+
 (define get-var-annotation
 	(lambda (var-name envs)
 		(let ((minor (find-minor var-name (car envs))))
@@ -216,6 +267,17 @@
 			`(and ,(? 'first) . ,(? 'rest))
 			(lambda (first rest)
 				(parse `(if ,first (and ,@rest) #f))))
+		(pattern-rule 
+			`(or)
+			(lambda () (parse #f)))
+		(pattern-rule 
+			`(or ,(? 'e1))
+			(lambda (e1) (parse e1) ))
+		(pattern-rule 
+			`(or . ,(? 'exps))
+			(lambda (exps)
+				(let ((parsed-exps (map parse exps)))
+					`(or ,parsed-exps))))
 		(pattern-rule
 			`(,(? 'va  ^var?) . ,(? 'varb list?))
 			(lambda (vari variables)

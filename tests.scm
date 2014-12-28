@@ -8,8 +8,12 @@
 
 (define-test-suite foo
 
-	(define-test test-mock
-		(assert-equal? 1 1)
+	(define-test test-parse-or
+		(assert-equal? (parse '(or)) '(const #f) )
+		(assert-equal? (parse '(or #f)) '(const #f) )
+		(assert-equal? (parse '(or 1)) '(const 1) )
+		(assert-equal? (parse '(or 1 2 3)) '(or ((const 1) (const 2) (const 3))) )
+		(assert-equal? (parse '(or a b c)) '(or ((var a) (var b) (var c) )) )
 	)
 
 	(define-test test-find-minor
@@ -33,7 +37,6 @@
 		(assert-equal? (get-var-annotation 'b '((x y z) (a b c) (a b c) (b))) `(bvar b 0 1) )
 
 		(assert-equal? (get-var-annotation 'not '((a) (b) (c))) `(fvar not) )
-
 	)
 
 )
